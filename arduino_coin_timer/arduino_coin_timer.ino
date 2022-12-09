@@ -23,8 +23,6 @@ bool pointsFlag = false;
 enum state {
   STOP, 
   PLAY,
-  PAUSE,
-  END,
 };
 state myState;
 
@@ -33,6 +31,7 @@ void toStop() {
   myState = STOP;
   digitalWrite(RESULT_PIN, LOW);
   innerTime = 0;
+  displayClock();
   pointsFlag = true;
   disp.point(pointsFlag);
 }
@@ -40,43 +39,21 @@ void toStop() {
 void toPlay() {
   Serial.println("toPlay start myState: " + String(myState));
   myState = PLAY;
-  digitalWrite(RESULT_PIN, LOW);
-}
-
-void toPause() {
-  Serial.println("toPause start myState: " + String(myState));
-  myState = PAUSE;
-  digitalWrite(RESULT_PIN, LOW);
-}
-
-void toEnd() {
-  Serial.println("toEnd start myState: " + String(myState));
-  myState = END;
   digitalWrite(RESULT_PIN, HIGH);
 }
- 
+
 void pingPoints() {
   if (millis() - lastPingPoint >= POINTS_PING_MILLIS) {
+    lastPingPoint = millis();
     pointsFlag = !pointsFlag;
     disp.point(pointsFlag);
-  }
-}
-
-void pingClock() {
-  if (millis() - lastPingPoint >= POINTS_PING_MILLIS) {
-    if (brightness == 7) {
-      brightness = 0;
-    } else {
-      brightness = 7;
-    }
-    disp.brightness(brightness);
   }
 }
 
 void updateTime() {
   if (millis() - lastClockUpdate >= CLOCK_UPDATE_MILLIS) {
     if (innerTime < 1) {
-      return toEnd();
+      return toStop();
     }
     innerTime--;
     displayClock();
@@ -100,6 +77,7 @@ void coinHandler() {
   innerTime += COIN_SECONDS;
   lastCoinTime = millis();
   displayClock();
+  toPlay();
   Serial.println("coinHandler end innerTime: " + String(innerTime));
 }
 
@@ -107,21 +85,10 @@ void playHandler() {
   Serial.println("playHandler start myState: " + String(myState));
   switch (myState) {
     case PLAY:
-      toPause();
+      toStop();
       break;
     case STOP:
-    case PAUSE:
       toPlay();
-  }
-}
-
-void resetHandler() {
-  Serial.println("resetHandler start myState: " + String(myState));
-  switch (myState) {
-    case PLAY:
-    case PAUSE:
-    case END:
-      toStop();
   }
 }
 
@@ -131,7 +98,6 @@ void setup() {
   pinMode(RESET_BTN_PIN, INPUT);
   attachInterrupt(digitalPinToInterrupt(COIN_PIN), coinHandler, FALLING);
   attachInterrupt(digitalPinToInterrupt(PlAY_BTN_PIN), playHandler, RISING);
-  attachInterrupt(digitalPinToInterrupt(RESET_BTN_PIN), resetHandler, RISING);
 
   pinMode(RESULT_PIN, OUTPUT);
 
@@ -149,11 +115,6 @@ void loop() {
     case PLAY:
       pingPoints();
       updateTime();
-      break;
-    case PAUSE:
-      break;
-    case END:
-      pingClock();
       break;
     default:
       toStop();
