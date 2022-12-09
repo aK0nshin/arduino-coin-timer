@@ -106,6 +106,7 @@ void setup() {
   disp.brightness(brightness);
   displayClock();
   myState = STOP;
+  toStop();
   Serial.begin(115200);
 }
 
