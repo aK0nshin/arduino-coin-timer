@@ -20,16 +20,16 @@ uint32_t lastClockUpdate = 0;
 uint8_t brightness = 7;   // яркость, 0 - 7 (минимум - максимум)
 bool pointsFlag = false;
 
-typedef enum
-{
+enum state {
   STOP, 
   PLAY,
   PAUSE,
   END,
-} state;
-state myState = STOP;
+};
+state myState;
 
 void toStop() {
+  Serial.println("toStop start myState: " + String(myState));
   myState = STOP;
   digitalWrite(RESULT_PIN, LOW);
   innerTime = 0;
@@ -38,16 +38,19 @@ void toStop() {
 }
 
 void toPlay() {
+  Serial.println("toPlay start myState: " + String(myState));
   myState = PLAY;
   digitalWrite(RESULT_PIN, LOW);
 }
 
 void toPause() {
+  Serial.println("toPause start myState: " + String(myState));
   myState = PAUSE;
   digitalWrite(RESULT_PIN, LOW);
 }
 
 void toEnd() {
+  Serial.println("toEnd start myState: " + String(myState));
   myState = END;
   digitalWrite(RESULT_PIN, HIGH);
 }
@@ -101,6 +104,7 @@ void coinHandler() {
 }
 
 void playHandler() {
+  Serial.println("playHandler start myState: " + String(myState));
   switch (myState) {
     case PLAY:
       toPause();
@@ -112,6 +116,7 @@ void playHandler() {
 }
 
 void resetHandler() {
+  Serial.println("resetHandler start myState: " + String(myState));
   switch (myState) {
     case PLAY:
     case PAUSE:
@@ -133,6 +138,7 @@ void setup() {
   disp.clear();
   disp.brightness(brightness);
   displayClock();
+  myState = STOP;
   Serial.begin(115200);
 }
 
