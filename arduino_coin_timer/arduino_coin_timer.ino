@@ -96,6 +96,7 @@ void coinHandler() {
   }
   innerTime += COIN_SECONDS;
   lastCoinTime = millis();
+  displayClock();
   Serial.println("coinHandler end innerTime: " + String(innerTime));
 }
 
