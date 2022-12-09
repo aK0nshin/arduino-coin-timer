@@ -128,6 +128,7 @@ void setup() {
 
   disp.clear();
   disp.brightness(brightness);
+  displayClock();
 }
 
 void loop() {
