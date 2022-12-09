@@ -89,11 +89,14 @@ void displayClock() {
 }
 
 void coinHandler() {
+  Serial.println("coinHandler start innerTime: " + String(innerTime));
   if (lastCoinTime + 300 > millis()) {
+    Serial.println("coinHandler debounce lastCoinTime: " + String(lastCoinTime) + " millis: " + millis());
     return;
   }
   innerTime += COIN_SECONDS;
   lastCoinTime = millis();
+  Serial.println("coinHandler end innerTime: " + String(innerTime));
 }
 
 void playHandler() {
@@ -129,6 +132,7 @@ void setup() {
   disp.clear();
   disp.brightness(brightness);
   displayClock();
+  Serial.begin(115200);
 }
 
 void loop() {
