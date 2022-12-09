@@ -1,11 +1,11 @@
 #include <GyverTM1637.h>
 
-#define CLK_PIN 2
-#define DIO_PIN 3
-#define COIN_PIN 4
-#define PlAY_BTN_PIN 5
-#define RESET_BTN_PIN 6
-#define RESULT_PIN 12
+#define CLK_PIN 4 
+#define DIO_PIN 5 
+#define COIN_PIN 2 
+#define PlAY_BTN_PIN 3 
+#define RESET_BTN_PIN 6 
+#define RESULT_PIN 13
 
 #define COIN_SECONDS 600
 #define POINTS_PING_MILLIS 500
@@ -52,6 +52,7 @@ void pingPoints() {
 
 void updateTime() {
   if (millis() - lastClockUpdate >= CLOCK_UPDATE_MILLIS) {
+    lastClockUpdate = millis();
     if (innerTime < 1) {
       return toStop();
     }
